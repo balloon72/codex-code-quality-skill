@@ -1,0 +1,27 @@
+README.md
+  s_b4a609bf284b94::t_43f6e9097c8f24 15-16
+SKILL.md
+  s_b4a609bf284b94::t_2187375a3c1d45 3,12,27,33-35,44,83,85,90
+references/python.md
+  s_b4a609bf284b94::t_100fb774e4d242 29
+references/review.md
+  s_b4a609bf284b94::t_5abd5167736490 44-48,54-55
+references/verification.md
+  s_b4a609bf284b94::t_6a2064b39bf71c 17-22
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.4",
+  "base_commit_sha": "1905042f387794d1e1c6bccf422bd0f5b1af5fa1",
+  "prompts": {},
+  "sessions": {
+    "s_b4a609bf284b94": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0fd29-b27b-7bf0-a1fb-0f79050153f9",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "hanmo1 <hanmo1@lenovo.com>"
+    }
+  }
+}

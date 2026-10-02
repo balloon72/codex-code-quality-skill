@@ -1,6 +1,6 @@
 ---
 name: code-quality
-description: 按需审查、优化和重构 Java、Python、React/TypeScript 代码，优先保证正确性、简洁性、可维护性、安全性和可验证性。用于“优化代码”“重构”“代码 review”“让代码更优雅”“检查过度设计/重复逻辑/性能问题”等任务；默认保持现有行为，不做无关大改。
+description: 按需审查、优化和重构 Java、Python、React/TypeScript 代码，优先保证正确性、简洁性、可维护性、安全性和可验证性。用于“优化代码”“重构”“代码 review”“让代码更优雅”“检查过度设计/重复逻辑/性能问题”等任务；默认保持现有行为，不做无关大改。不用于普通开发、问答或未要求质量优化的常规修复。
 ---
 
 # Code Quality
@@ -9,7 +9,7 @@ description: 按需审查、优化和重构 Java、Python、React/TypeScript 代
 
 ## 核心原则
 
-1. **项目规则优先**：先读取仓库中的 `AGENTS.md`、README、贡献指南、formatter/linter/typecheck/test 配置，再应用本 Skill。
+1. **项目规则优先**：先读取适用的 `AGENTS.md`，再按任务需要读取相关 README、贡献指南和工具配置；项目 formatter/linter 配置优先于通用风格建议。
 2. **行为保持优先**：如果用户只要求“优化/重构”，默认不得改变对外行为、接口契约、数据库语义和兼容性边界。
 3. **简单优于抽象**：优化不是增加 interface、factory、builder、manager、util、wrapper 或层级。新增抽象必须减少认知负担，并有现实复用或边界价值。
 4. **最小改动**：只修改与目标直接相关的代码。不要顺手大规模清理无关历史问题。
@@ -24,13 +24,15 @@ description: 按需审查、优化和重构 Java、Python、React/TypeScript 代
 - **Optimize 模式**：用户要求优化、重构、整理、让代码更优雅。允许直接修改，但默认保持行为。
 - **Fix + Quality 模式**：用户要求修 Bug，同时优化相关实现。先修根因和回归测试，再做与该 Bug 直接相关的质量改进。
 
-如果范围不明确，优先处理当前 diff、用户点名文件或与任务直接相关的最小调用链，不扩展成全仓库重构。
+优先使用用户点名的文件、模块或变更范围；未点名时，仅处理能确认属于当前任务的改动。范围或改动归属仍不明确时先澄清，不把整个工作区 diff 自动视为优化授权，也不扩展成全仓库重构。
 
 ### 2. 建立上下文
 
 修改或评审前：
 
-- 查看 `git status` / `git diff`，确认已有用户改动，避免覆盖。
+- 本地 Git 工作区先查看 `git status --short`，区分已有改动与本次任务。不要覆盖、回滚或顺手清理其他任务的改动。
+- 明确比较范围：未暂存用 `git diff`，已暂存用 `git diff --cached`；未跟踪文件从 status 中识别并按需读取。审查分支或 PR 时，使用用户指定或 PR 声明的目标分支及 merge-base；不要把本地未提交 diff 当作完整 PR。
+- 通过托管平台接口审查时，使用平台提供的 base/head 和 diff；没有本地检出时无需为了执行 Git 命令而克隆仓库。
 - 阅读目标代码及其调用者、测试、接口或类型定义。
 - 识别语言和框架。
 - 只加载与当前技术栈有关的 reference：
@@ -39,7 +41,7 @@ description: 按需审查、优化和重构 Java、Python、React/TypeScript 代
   - Python：`references/python.md`
   - React/TypeScript：`references/react.md`
   - Review：`references/review.md`
-  - 验证：`references/verification.md`
+  - 验证：需要运行检查或修改后读取 `references/verification.md`
   - 安全/性能：存在相关代码时加载 `references/security-performance.md`
 
 ### 3. 先找高价值问题
@@ -78,29 +80,14 @@ description: 按需审查、优化和重构 Java、Python、React/TypeScript 代
 
 ### 5. Review 模式输出
 
-- **Critical**：安全漏洞、数据损坏、明显错误、严重兼容性问题。
-- **Required**：建议合并前修复的正确性、结构性或高风险问题。
-- **Consider**：有明确收益但不阻塞的改进。
-- **Nit**：低价值风格问题；尽量少报。
+严重度与发现格式见 `references/review.md`。聊天回复优先列出有证据的发现；用户要求文件报告时可使用 `assets/review-template.md`，省略不适用章节。
 
-每条发现至少说明：位置 → 问题 → 为什么重要 → 建议修法。
-
-### 6. 语言规则
-
-根据当前代码读取对应 reference，不要一次性加载所有语言规则。
-
-- Java：`references/java.md`
-- Python：`references/python.md`
-- React/TypeScript：`references/react.md`
-
-项目已配置 formatter/linter 时，以项目配置为格式事实来源。
-
-### 7. 验证
+### 6. 验证
 
 修改后必须读取 `references/verification.md` 并做与改动匹配的验证。
 
 1. 重新检查 `git diff`。
-2. 使用仓库真实存在的 formatter/linter/typecheck/build/test 命令。
+2. 使用仓库真实存在的验证命令，并遵守验证指南中的检查模式与修改范围限制。
 3. 优先运行最小相关测试，再视风险运行更大范围验证。
 4. 如果某项无法执行，准确报告“未验证”及原因。
 5. Bug 修复应尽量有能复现旧问题的回归测试。
